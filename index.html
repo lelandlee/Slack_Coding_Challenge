@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Slack Picture Application</title>
+		<link rel="stylesheet" href="style.css">
+  </head>
+
+	<body>
+		<div id="search-area">
+			<input type="text submit" id="seach-query" placeholder="Search For Clothes" class="focus" value=''
+				onkeydown="if (event.keyCode == 13) { startSearch(); return false; }">
+			<input type="button" id="search-button" value='search' onclick=startSearch()>
+		</div>
+		<div id="photo-loc"></div>
+		<dialog id="modal">
+			<h2 id='title'></h2>
+			<img src="" id="modal-photo"></img>
+			<div id="modal-control-buttons">
+				<input type="button" id="next" value='Next' onclick=next()>
+				<input type="button" id="previous" value='Previous' onclick=previous()>
+			</div>
+		</dialog>
+		<script src="js.js"></script>
+	</body>
+
+</html>
+
+<!--
+	Style the cards better + add CSS animations
+	Might want to have different sized cards rather than all the same size?
+	Might want to try having a different image shown when hovering on the item
+
+-->

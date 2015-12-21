@@ -1,0 +1,48 @@
+#search-area {
+	text-align: center;
+	margin: 100px;
+}
+
+/* Input styling adapted from - http://callmenick.com/post/various-css-input-text-styles */
+input {
+  padding: 10px;
+  border: solid 5px #c9c9c9;
+  transition: border 0.3s;
+}
+input:focus,
+input.focus {
+  border: solid 5px #969696;
+}
+
+
+#photo-loc {
+	text-align: center;
+}
+
+img.preview{
+	border: 2px solid black;
+	cursor: pointer;
+	margin: 4px;
+	width: 274px;
+	height: 393px;
+}
+
+img.preview:hover {
+	border: 4px solid orange;
+	margin: 2px;
+}
+
+#modal-photo {
+	width: 554px;
+	height: 800px;
+}
+#modal {
+	text-align: center;
+}
+
+#next {
+	float: right;
+}
+#previous {
+	float: left;
+}
