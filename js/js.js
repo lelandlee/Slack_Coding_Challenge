@@ -3,7 +3,14 @@
 
 const baseURL = 'https://api.zalando.com/articles/?fullText=';
 var content = [];
+var viewOrder = []; // Order in which items are posted to DOM
 var currentItem = "";
+var stepCount = 1;
+var currentSearchItem = "";
+//import {onImageClick, onImageMouseOver} from './onImage'
+
+//Might want to present a number of items somewhere at the top or bottom
+// -> data is contained within the API reponse
 
 // Function inpired from - http://www.html5rocks.com/en/tutorials/es6/promises/#toc-javascript-promises
 // Might want to add more error handling, etc
@@ -29,72 +36,49 @@ function get(url) {
   });
 }
 
-//Need to do pagination later to load more images
-
 //Note that the fullText search is not the greatest
-function searchFor(item) {
-	const url = baseURL + encodeURIComponent(item)
-	removeOldContent(document.getElementById('photo-loc'));
+function searchFor(item, pageNumber, keepExistingContent) {
+	currentSearchItem = item;
+	const url = baseURL + encodeURIComponent(item) + '&page=' + (pageNumber || 1) // + '&pageSize=20'
+	
+	if (!keepExistingContent) {
+		removeOldContent(document.getElementById('photo-loc'));
+		stepCount = 1;
+	}
 
 	get(url).then(function(response) {
 		response = JSON.parse(response);
-		content = response.content;
-	  renderContent(response.content);
+		keepExistingContent ? content.push(response.content) : content = response.content;
+	  renderContent(response.content, keepExistingContent);
+	  setRemainingItems(response.totalElements)
 	}, function(error) {
 	  console.error("Failed!", error);
 	});
 }
 
-function removeOldContent(items) {
-	while (items.firstChild) {
-    items.removeChild(items.firstChild);
-	}
-}
-
-
-function renderContent(content) {
-	if (content.length === 0) {
-		console.log('No Images')
-		//Render something that prompts the end user to search again
-		var err = document.createElement('div');
-		err.innerHTML = 'Search Again'
-		document.getElementById('photo-loc').appendChild(err)
-		return
-	}
-
-	content.forEach(function(item) {
-		imageURL = item.media.images[0].smallHdUrl;
-
-		var img = document.createElement('img');
-		img.className = 'preview';
-		img.src = imageURL;
-		img.onclick = function() { onImageClick(item); }
-		document.getElementById('photo-loc').appendChild(img)
-	})
-}
-
-function onImageClick(item) {
-	document.getElementById('title').innerHTML = item.name;
-	currentItem = item.id;
-	document.getElementById('modal-photo').src = item.media.images[0].mediumHdUrl;
-
-	if (!document.getElementById("modal").open) {
-		document.getElementById("modal").showModal();
-	}
-}
-
 function next(goBackwards) {
 	var index = 0;
-	content.find(function(item, i) { //Is this efficient using vanilla js...
+	viewOrder.find(function(item, i) { //Is this efficient using vanilla js...
 		index = i
 		return item.id === currentItem;
 	})
 
-	//Need to loop when get to the end of content or trigger another api call to get more content
-	//Might also want to pass in parameters to limit the amount of the data coming back
+	if (goBackwards) {
+		var nextItem = viewOrder[index - 1] || viewOrder[0];
+		onImageClick(nextItem);
+		return
+	}
 
-	const nextItem = !goBackwards ? content[index + 1] : content[index - 1] || content[0];
-	console.log(nextItem)
+	//Trigger another api call to get more viewOrder
+	if (index === viewOrder.length - 1) {
+		addImages()
+		setTimeout(function() { //Would be better to use a promise or something similar...
+			var nextItem = viewOrder[index + 1]
+			onImageClick(nextItem);
+			return
+		}, 1000)
+	}
+	var nextItem = viewOrder[index + 1]
 	onImageClick(nextItem);
 }
 
@@ -118,12 +102,24 @@ function getDocHeight() {
     D.body.clientHeight, D.documentElement.clientHeight
   );
 }
+
+//add a timer delay (Several seconds)
+//Remove top icons if there are too many -> might hinder performance
+//Then need to do the same when going to top..
 window.onscroll = (function() {
  	if(window.scrollY + window.innerHeight == getDocHeight()) {
-   	console.log('hit bottom')
-   	//Set off another api call once get here
+   	addImages();
  	}
 });
+
+function addImages() {
+	// How to check memory usage rather than size of array?
+	if (viewOrder.length > 300) {
+
+	}
+	stepCount += 1
+  searchFor(currentSearchItem, stepCount, true);
+}
 
 //Look into this - http://blog.grayghostvisuals.com/js/detecting-scroll-position/
 

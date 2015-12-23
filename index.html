@@ -3,7 +3,8 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Slack Picture Application</title>
-		<link rel="stylesheet" href="style.css">
+		<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="css/dialog-polyfill.css">
   </head>
 
 	<body>
@@ -21,7 +22,11 @@
 				<input type="button" id="previous" value='Previous' onclick=previous()>
 			</div>
 		</dialog>
-		<script src="js.js"></script>
+		<script type="text/javascript" src="js/dialog-polyfill.js"></script>
+		<script type="text/javascript" src="js/onImageAction.js"></script>
+		<script type="text/javascript" src="js/render.js"></script>
+		<script type="text/javascript" src="js/localStorage.js"></script>
+		<script type="text/javascript" src="js/js.js"></script>
 	</body>
 
 </html>
