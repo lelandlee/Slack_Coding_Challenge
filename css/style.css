@@ -50,3 +50,25 @@ img.preview:hover {
 #previous {
 	float: left;
 }
+
+/* Adapted from - http://codepen.io/grayghostvisuals/pen/ehbaK */
+#count {
+	visibility: hidden;
+	margin: 0px;
+}
+#count.is--fixed {
+  margin: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  text-align: center
+  line-height: 1.5;
+  -webkit-transform: translateY(0);
+          transform: translateY(0);
+  padding: 2px;
+  color: white;
+  background-color: black; /* Fallback Colour */
+  background-color: rgba(0, 0, 0, 0.58);
+  visibility: visible;;
+}

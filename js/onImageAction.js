@@ -28,3 +28,10 @@ function onImageMouseOver(item) {
 	//More images is better for UX, rather than a description -> image shows more value
 	//Or could do an internet speed check...
 }
+
+//This is to close the modal when clicking outside of it
+document.querySelector('#modal').addEventListener('click', function(e){
+	if (e.target.id === "modal") {
+		document.getElementById("modal").close();
+	}
+})

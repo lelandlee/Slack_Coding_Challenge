@@ -4,7 +4,7 @@ function removeOldContent(items) {
 	}
 }
 
-function renderContent(content, keepExistingContent) {
+function renderContent(content, keepExistingContent, prepend) {
 	if (content.length === 0 && !keepExistingContent) {
 		//Render something that prompts the end user to search again
 		var err = document.createElement('h2');
@@ -32,8 +32,15 @@ function renderContent(content, keepExistingContent) {
 		img.onclick = function() { onImageClick(item); }
 		img.onmouseover = function() { onImageMouseOver(item); }
 		img.onload = function() {
-			viewOrder.push(item)
-			document.getElementById('photo-loc').appendChild(img);
+			const parentNode = document.getElementById('photo-loc');
+			if (!prepend) {
+				viewOrder.push(item);
+				parentNode.appendChild(img);
+			}
+			if (prepend) {
+				viewOrder.unshift(item); //this is expensive...
+				parentNode.insertBefore(img, parentNode.firstChild);
+			}
 		}
 		//Loading alternative images if photos are missing, mainly because hitting the API too quickly..
 		img.onerror = function() {
@@ -45,9 +52,27 @@ function renderContent(content, keepExistingContent) {
 	})
 }
 
+function removeContent(items) {
+	const parentNode = document.getElementById('photo-loc');
+	items.forEach(function(item) {
+		var element = document.getElementById(item.id);
+		parentNode.removeChild(element);
+	})
+}
+
 // This lists the remaining number of items
 // Might want to have a visualisation of it too? a horizontal bar??
 // On something like this => http://blog.grayghostvisuals.com/js/detecting-scroll-position/
 function setRemainingItems(count) {
+	document.querySelector('#count').innerHTML = count + " Items";
+}
 
+function populateDatalist() {
+	var dataList = document.querySelector('#historicSearches');
+	const history = getHistory(true);
+	history.forEach(function(hist) {
+		var option = document.createElement('option');
+		option.value = hist
+		dataList.appendChild(option)
+	})
 }

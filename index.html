@@ -8,12 +8,17 @@
   </head>
 
 	<body>
-		<div id="search-area">
-			<input type="text submit" id="seach-query" placeholder="Search For Clothes" class="focus" value=''
-				onkeydown="if (event.keyCode == 13) { startSearch(); return false; }">
-			<input type="button" id="search-button" value='search' onclick=startSearch()>
-		</div>
+		<header id="search-area">
+			<input type="text submit" id="seach-query" placeholder="Search For Clothes" class="focus seach-set" value=''
+				onkeydown="if (event.keyCode == 13) { startSearch(); return false; }" list="historicSearches">
+			<datalist id="historicSearches">
+    	</datalist>
+			<input type="button" id="search-button" value='search' class= "search-set" onclick=startSearch()>
+			<h5 id="count"></h5>
+		</header>
+
 		<div id="photo-loc"></div>
+
 		<dialog id="modal">
 			<h2 id='title'></h2>
 			<img src="" id="modal-photo"></img>
@@ -22,10 +27,13 @@
 				<input type="button" id="previous" value='Previous' onclick=previous()>
 			</div>
 		</dialog>
+
+		<script type="text/javascript" src="js/utils.js"></script>
 		<script type="text/javascript" src="js/dialog-polyfill.js"></script>
 		<script type="text/javascript" src="js/onImageAction.js"></script>
-		<script type="text/javascript" src="js/render.js"></script>
 		<script type="text/javascript" src="js/localStorage.js"></script>
+		<script type="text/javascript" src="js/render.js"></script>
+		<script type="text/javascript" src="js/stickyScroll.js"></script>
 		<script type="text/javascript" src="js/js.js"></script>
 	</body>
 

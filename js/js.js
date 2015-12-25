@@ -1,5 +1,4 @@
-// Might want to use imports if there is a natural split in the code
-//import screenLoading from 'screenLoading.js'
+//Try to reduce the overal number of global variables if possible, use something similar to a store
 
 const baseURL = 'https://api.zalando.com/articles/?fullText=';
 var content = [];
@@ -7,10 +6,11 @@ var viewOrder = []; // Order in which items are posted to DOM
 var currentItem = "";
 var stepCount = 1;
 var currentSearchItem = "";
-//import {onImageClick, onImageMouseOver} from './onImage'
+var removedContent = []; // Removed items
 
-//Might want to present a number of items somewhere at the top or bottom
-// -> data is contained within the API reponse
+populateDatalist();
+searchFor('jogger');
+
 
 // Function inpired from - http://www.html5rocks.com/en/tutorials/es6/promises/#toc-javascript-promises
 // Might want to add more error handling, etc
@@ -88,44 +88,51 @@ function previous() {
 
 function startSearch(i) {
 	const searchText = document.querySelector('#seach-query').value;
+	storeHistory(searchText)
 	searchFor(searchText)
-}
-
-searchFor('jogger')
-
-//Below inspiration - http://stackoverflow.com/questions/3898130/how-to-check-if-a-user-has-scrolled-to-the-bottom
-function getDocHeight() {
-  var D = document;
-  return Math.max(
-    D.body.scrollHeight, D.documentElement.scrollHeight,
-    D.body.offsetHeight, D.documentElement.offsetHeight,
-    D.body.clientHeight, D.documentElement.clientHeight
-  );
+	populateDatalist();
 }
 
 //add a timer delay (Several seconds)
 //Remove top icons if there are too many -> might hinder performance
 //Then need to do the same when going to top..
 window.onscroll = (function() {
- 	if(window.scrollY + window.innerHeight == getDocHeight()) {
+ 	if (window.scrollY + window.innerHeight == getDocHeight()) {
    	addImages();
+ 	}
+ 	if (window.scrollY < height('header')) {
+ 		addOldImages();
  	}
 });
 
 function addImages() {
-	// How to check memory usage rather than size of array?
-	if (viewOrder.length > 300) {
-
-	}
+	checkIfNeedToRemove()
 	stepCount += 1
   searchFor(currentSearchItem, stepCount, true);
 }
 
-//Look into this - http://blog.grayghostvisuals.com/js/detecting-scroll-position/
+function checkIfNeedToRemove() {
+	//Could also use memory remaining to decide whether to reduce listed elements
+	//const memory = window.performance.memory;
+	//const memoryRemaining = memory.totalJSHeapSize - memory.usedJSHeapSize;
 
-//This is to close the modal when clicking outside of it
-document.querySelector('#modal').addEventListener('click', function(e){
-	if (e.target.id === "modal") {
-		document.getElementById("modal").close();
+	// The limit is set artificially low to emphasize what it does
+	if (viewOrder.length > 60) {
+		// Keeps the maximum amount of items at 80
+		const removed = viewOrder.splice(0, viewOrder.length - 40); // This is expensive no? Depends on browser...
+		removedContent.push(removed)
+		removeContent(removed)
+		console.log('Removed old content')
 	}
-})
+}
+
+function addOldImages() {
+	if (removedContent.length > 0) {
+		// Need to remove items from removedContent is LIFO (stack)
+		const toAdd = removedContent.pop().reverse();
+		console.log('toAdd', toAdd);
+		renderContent(toAdd, true, true);
+		checkIfNeedToRemove();
+	}
+}
+
