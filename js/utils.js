@@ -11,7 +11,7 @@ function height(selector) {
   return parseInt(elmHeight) + parseInt(elmMargin);
 }
 
-//Below inspiration - http://stackoverflow.com/questions/3898130/how-to-check-if-a-user-has-scrolled-to-the-bottom
+// Below from - http://stackoverflow.com/questions/3898130/how-to-check-if-a-user-has-scrolled-to-the-bottom
 function getDocHeight() {
   var D = document;
   return Math.max(

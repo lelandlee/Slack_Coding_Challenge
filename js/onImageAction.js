@@ -17,12 +17,6 @@ function onImageClick(item) {
 
 function onImageMouseOver(item) {
 	console.log('item is hovered on');
-	//pre lazy load images in the background...?
-
-	//Why is below going crazy??
-	/*var img = new Image();
-	img.src = item.media.images[4].smallHdUrl;
-	document.getElementById(item.id).src = img.src; //How to add a transition here?*/
 
 	//Choose between showing more images vs some css stuff
 	//More images is better for UX, rather than a description -> image shows more value

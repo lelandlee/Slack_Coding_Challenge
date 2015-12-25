@@ -21,7 +21,9 @@ Implimented:
  * There is a datalist to show recently searched items (uses local storage to save history)... but there is a need to use a polyfill for Safari support...but then again if it is missing it is not terrible....
  * For much of the CSS styling I've taken inspiration from a variety of sources and they are cited where they are used
 
-To Impliment:
+Product Backlog:
  * Some sort of tests.... using console.assert() in webworkers (because there is more support there than in browser or at least according to [MDN](https://developer.mozilla.org/en-US/docs/Web/API/console/assert))
+ * Multi sized images? some will be taller (2x1) and larger (2x2)
+ * For the stickyscroll, rather than listing the number of items, have a progress bar on the number of items. Similar to what Bloomberg Businessweek does for their articles, but in this case only show the portion that is currently being viewed.
 
 Notes:
