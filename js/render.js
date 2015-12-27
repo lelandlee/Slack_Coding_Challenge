@@ -6,9 +6,11 @@ function removeOldContent(items) {
 
 function renderContent(content, keepExistingContent, prepend) {
 	if (content.length === 0 && !keepExistingContent) {
-		errorMessage()
+		//errorMessage()
 		return
 	}
+
+	const parentNode = document.getElementById('photo-loc');
 
 	content.forEach(function(item) {
 		const modelImages = item.media.images.filter(function(image) {
@@ -27,9 +29,8 @@ function renderContent(content, keepExistingContent, prepend) {
 		img.onclick = function() { onImageClick(item); }
 		img.onmouseover = function() { onImageMouseOver(item); }
 		img.onload = function() {
-			const parentNode = document.getElementById('photo-loc');
 			if (!prepend) {
-				viewOrder.push(item); // Should be accessing via an object store....
+				viewOrder.push(item);
 				parentNode.appendChild(img);
 			}
 			if (prepend) {
@@ -37,7 +38,7 @@ function renderContent(content, keepExistingContent, prepend) {
 				parentNode.insertBefore(img, parentNode.firstChild);
 			}
 		}
-		//Loading alternative images if photos are missing, mainly because hitting the API too quickly..
+		//Loading alternative images if asset cannot be loaded, mainly because hitting the API too quickly..
 		img.onerror = function() {
 			if (tries < modelImages.length) {
     		this.src = item.media.images[tries].smallHdUrl;
@@ -48,12 +49,19 @@ function renderContent(content, keepExistingContent, prepend) {
 }
 
 function errorMessage() {
-	//Render text that prompts the end user to search again
+	// Render text that prompts the end user to search again
+	// Could also suggest other fields to the end user as examples
 	var err = document.createElement('h2');
 	err.className = 'error'
 	err.innerHTML = 'Search Again'
 	document.getElementById('photo-loc').appendChild(err)
-	//Could also suggest other fields to the end user as examples
+}
+
+function clearErrorMessage() {
+	var element = document.getElementsByClassName('error');
+	if (!element) {
+		document.getElementById('photo-loc').removeChild(element);
+	}
 }
 
 function removeContent(items) {
@@ -64,7 +72,7 @@ function removeContent(items) {
 	})
 }
 
-// This lists the remaining number of items
+// This displays the remaining number of items
 function setRemainingItems(count) {
 	document.querySelector('#count').innerHTML = count + " Items";
 }

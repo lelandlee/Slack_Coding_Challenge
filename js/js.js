@@ -5,12 +5,16 @@ var viewOrder = []; // Order in which items are posted to DOM
 var currentItem = "";
 var pageNumber = 1;
 var currentSearchItem = "";
-var removedContent = []; // Removed items
+var removedContent = {
+	top: [],
+	bottom: []
+}
+var refreshRate = 1000;
+
 
 populateDatalist();
 searchFor('jogger');
 
-//Note that the fullText search is not the greatest
 function searchFor(item, pageNumber, keepExistingContent) {
 	currentSearchItem = item;
 	const url = baseURL + encodeURIComponent(item) + '&page=' + (pageNumber || 1)
@@ -66,46 +70,75 @@ function startSearch(i) {
 	populateDatalist();
 }
 
-// Consider adding a timer delay (Several seconds)?
-window.onscroll = (function() {
- 	if (window.scrollY + window.innerHeight == getDocHeight()) {
-   	addImages();
- 	}
- 	if (window.scrollY < height('header')) {
- 		addOldImages();
- 	}
-});
-
 function addImages() {
-	checkIfNeedToRemove()
+	checkIfNeedToRemove(true)
 	pageNumber += 1
   searchFor(currentSearchItem, pageNumber, true);
 }
 
-function checkIfNeedToRemove() {
+function checkIfNeedToRemove(isBottom) {
 	//Could also use memory remaining to decide whether to reduce listed elements
 	//const memory = window.performance.memory;
 	//const memoryRemaining = memory.totalJSHeapSize - memory.usedJSHeapSize;
 
 	// The limit is set artificially low to showcase it
 	if (viewOrder.length > 60) {
+		// Removing 40 items at a time
 		const removed = viewOrder.splice(0, viewOrder.length - 40); // This is expensive no? Depends on browser...
-		removedContent.push(removed)
-		removeContent(removed)
+		
+		if (!isBottom) {
+			removedContent.bottom.push(removed);
+			removeContent(removed);
+		}
+		if (isBottom) {
+			removedContent.top.push(removed);
+			removeContent(removed);
+		}
+		
 		console.log('Removed old content')
 	}
 }
 
 function addOldImages() {
-	if (removedContent.length > 0) {
+	if (removedContent.top.length > 0) {
 		// Items are removed from removedContent as LIFO (stack)
-		const toAdd = removedContent.pop().reverse(); //Adding 40 items at a time
+		const toAdd = removedContent.top.pop().reverse(); //Adding 40 items at a time
 		console.log('toAdd', toAdd);
 		renderContent(toAdd, true, true);
-		checkIfNeedToRemove();
-
-		//checkIfNeedToRemove creates issues as it is removing from the bottom and pasting back into array
-		// -> need to change the behaviour slighly differently....append vs prepend
+		checkIfNeedToRemove(false);
 	}
 }
 
+// Consider adding a timer delay (Several seconds)?
+window.onscroll = (function() {
+ 	if (window.scrollY + window.innerHeight == utils.getDocHeight()) {
+   	addImages();
+ 	}
+ 	if (window.scrollY < utils.height('header')) {
+ 		addOldImages();
+ 	}
+});
+
+function determineRefreshRate() {
+	navigator.getBattery().then(function(battery) {
+		if (battery.charging) {
+			refreshRate = 1000;
+		}
+		else if (battery.level < .30) {
+			refreshRate = 3000;
+		}
+	})
+}
+determineRefreshRate()
+setInterval(determineRefreshRate, 1000*60);
+
+// Continously checking to see if there is content presented
+// Check rate is reduced if low battery
+setInterval(function() {
+	if (document.getElementsByClassName('preview').length === 0
+		&& document.getElementsByClassName('error').length < 1) {
+		errorMessage()
+	} else {
+		clearErrorMessage()
+	}
+}, refreshRate)

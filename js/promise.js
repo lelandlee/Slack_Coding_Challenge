@@ -1,5 +1,6 @@
 // Function inpired from - http://www.html5rocks.com/en/tutorials/es6/promises/#toc-javascript-promises
 // Might want to add more error handling, etc
+
 function get(url) {
   return new Promise(function(resolve, reject) {
     var req = new XMLHttpRequest();

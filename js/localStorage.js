@@ -19,15 +19,16 @@ function storeHistory(search) {
 			date: Date.now(),
 		};
 
-		//Have the feeling that this is unperformant
-		//might be better to only pull at the begining and push at the end..
+		// This might not be performant
+		// might be better to only pull at the begining and push at the end..
 		// Performance -> http://www.stevesouders.com/blog/2014/02/11/measuring-localstorage-performance/
-		//plus using an array too...... linked list might be better? 
-		// --> But that is difficult to impliment for localStorage as everything is a string
+		// Wonder if it is possible to impliment a linked list in local storage -> would have to be a string....
 		if (history !== null) {
 			history = JSON.parse(history);
-			history.push(toAdd)
-			localStorage.setItem('history', JSON.stringify(history));
+			if (getHistory(true).indexOf(search.toLocaleLowerCase()) === -1) {
+				history.push(toAdd)
+				localStorage.setItem('history', JSON.stringify(history));
+			}
 		}
 		else {
 			localStorage.setItem('history', JSON.stringify([toAdd]))
